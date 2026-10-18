@@ -5,6 +5,9 @@ export default function Header() {
 
     const navigate = useNavigate();
 
+    const loggedUser = localStorage.getItem('user');
+    const username = loggedUser ? JSON.parse(loggedUser).name : 'Usuario';
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -18,7 +21,7 @@ export default function Header() {
             <div className="flex justify-between h-16 items-center">
                 <div className="flex items-center gap-2">
                     <div className="bg-emerald-100 p-2 rounded-lg">
-                        <span className="text-2xl" role="img" aria-label="snail">🐌</span>
+                        <span className="text-2xl hover:cursor-default" role="img" aria-label="snail">🐌</span>
                     </div>
                     <span className="text-xl font-bold text-emerald-700 tracking-tight">SnailBet</span>
                 </div>
@@ -29,7 +32,7 @@ export default function Header() {
                         hover:bg-gray-200 transition-colors">
                             <User size={16} className="text-gray-500" />
                         <button className="hover:cursor-pointer">
-                            Usuario
+                            {username}
                         </button>
                     </div>
                     <button 

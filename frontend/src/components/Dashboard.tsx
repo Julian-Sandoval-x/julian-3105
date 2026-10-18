@@ -4,6 +4,7 @@ import GraficaBarra from "./grafica-barra"
 import GraficaDonut from "./grafica-donut"
 
 export default function Main() {
+
   return (
     <>
         <Header />

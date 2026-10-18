@@ -84,6 +84,22 @@ app.post('/api/login', async (req: Request, res: Response) => {
   } 
 });
 
+app.post('/api/payment', (req: Request, res: Response) => {
+  const { amount } = req.body;
+
+  if (!amount || amount <= 0) {
+    return res.status(400).json({ message: 'Monto inválido' });
+  }
+
+  // Simular un retraso en la transacción
+  setTimeout(() => {
+    // Simular una transacción exitosa
+    res.status(400).json({ message: 'Transacción exitosa' });
+  }, 5000);
+
+
+});
+
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     status: "Servidor mock de SnailPay funcionando correctamente",

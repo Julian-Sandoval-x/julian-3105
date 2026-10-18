@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, UserRoundPlus, CircleCheck } from "lucide-react";
+import { Mail, Lock, User, UserRoundPlus, CircleCheck, Eye, EyeClosed } from "lucide-react";
 import CardHeader from "./CardHeader";
 
 export default function Register() {
@@ -13,6 +13,37 @@ export default function Register() {
         password: '',
         repeatPassword: ''
     });
+
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [repeatPasswordVisible, setRepeatPasswordVisible] = useState(false);
+
+    const [checkFieldPassword, setCheckFieldPassword] = useState({
+        minLength: false,
+        hasLowerCase: false,
+        hasUpperCase: false,
+        hasNumber: false,
+        hasSpecialChar: false
+    });
+    
+    useEffect(() => {
+        setCheckFieldPassword({
+            minLength: formData.password.length >= 8,
+            hasLowerCase: /[a-z]/.test(formData.password),
+            hasUpperCase: /[A-Z]/.test(formData.password),
+            hasNumber: /\d/.test(formData.password),
+            hasSpecialChar: /[^A-Za-z0-9]/.test(formData.password)
+        });
+
+    }, [formData.password]);
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    }
+
+    const toggleRepeatPasswordVisibility = () => {
+        setRepeatPasswordVisible(!repeatPasswordVisible);
+    }
+
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -33,8 +64,18 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!formData.nombre || !formData.email || !formData.password || !formData.repeatPassword) {
+            setError('Todos los campos son obligatorios');
+            return;
+        }
+
         if (formData.password !== formData.repeatPassword) {
             setError('Las contraseñas no coinciden');
+            return;
+        }
+
+        if (!checkFieldPassword.minLength || !checkFieldPassword.hasLowerCase || !checkFieldPassword.hasUpperCase || !checkFieldPassword.hasNumber || !checkFieldPassword.hasSpecialChar) {
+            setError('La contraseña no cumple con los requisitos');
             return;
         }
 
@@ -63,6 +104,7 @@ export default function Register() {
             navigate('/login', { replace: true });
 
         } catch (err) {
+            console.error(err);
             setError('Ocurrió un error al registrarse. Por favor, inténtalo de nuevo.');
         }
     }
@@ -110,13 +152,20 @@ export default function Register() {
                   <Lock size={20}/>
               </label>
               <input 
-                  type="password" 
+                  type={passwordVisible ? "text" : "password"} 
                   id="password" 
                   name="password" 
                   placeholder="Ingresa tu contraseña" 
                   className="w-full min-w-0 border-0 bg-transparent text-slate-700 placeholder:text-slate-400 outline-none focus:ring-0"
                   onChange={handleChange}
               />
+              <button type="button" className="text-slate-400 hover:text-slate-600 hover:cursor-pointer focus:outline-none" onClick={togglePasswordVisibility}>
+                {passwordVisible ? (
+                    <Eye size={20} />
+                ) : (
+                    <EyeClosed size={20} />
+                )}
+              </button>
           </div>
 
             <div>
@@ -126,36 +175,47 @@ export default function Register() {
 
                 <ul className="list-none text-sm font-light text-slate-500">
                 <li className="flex items-center">
-                    <CircleCheck size={16} className="text-slate-500 mr-2" />
+                    <CircleCheck size={16} className={`${checkFieldPassword.minLength ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
                     Al menos 8 caracteres
                 </li>
                 <li className="flex items-center">
-                    <CircleCheck size={16} className="text-slate-500 mr-2" />
+                    <CircleCheck size={16} className={`${checkFieldPassword.hasLowerCase ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
+                    Al menos una letra minuscula
+                </li>
+                <li className="flex items-center">
+                    <CircleCheck size={16} className={`${checkFieldPassword.hasUpperCase ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
                     Al menos una letra mayúscula
                 </li>
                 <li className="flex items-center">
-                    <CircleCheck size={16} className="text-slate-500 mr-2" />
+                    <CircleCheck size={16} className={`${checkFieldPassword.hasNumber ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
                     Al menos un número
                 </li>
                 <li className="flex items-center">
-                    <CircleCheck size={16} className="text-slate-500 mr-2" />
+                    <CircleCheck size={16} className={`${checkFieldPassword.hasSpecialChar ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
                     Al menos un carácter especial
                 </li>
             </ul>
             </div>
 
           <div className="flex gap-3 items-center w-full rounded-xl border border-slate-300 bg-white px-4 py-4 transition focus-within:border-emerald-500 focus-within::ring-2 focus-within::ring-emerald-500">
-              <label htmlFor="password">
+              <label htmlFor="repeatPassword">
                   <Lock size={20}/>
               </label>
               <input 
-                  type="password" 
+                  type={repeatPasswordVisible ? "text" : "password"} 
                   id="repeatPassword" 
                   name="repeatPassword" 
                   placeholder="Repite tu contraseña" 
                   className="w-full min-w-0 border-0 bg-transparent text-slate-700 placeholder:text-slate-400 outline-none focus:ring-0"
                   onChange={handleChange}
               />
+              <button type="button" className="text-slate-400 hover:text-slate-600 hover:cursor-pointer focus:outline-none" onClick={toggleRepeatPasswordVisibility}>
+                {repeatPasswordVisible ? (
+                    <Eye size={20} />
+                ) : (
+                    <EyeClosed size={20} />
+                )}
+              </button>
           </div>
                 
           <button 

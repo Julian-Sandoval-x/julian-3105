@@ -8,3 +8,4 @@ export type Session = {
     user: Omit<User, 'passwordHash'>;
     balance: number;
 }
+
