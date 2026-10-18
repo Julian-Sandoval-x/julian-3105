@@ -1,10 +1,18 @@
-import { Mail, Lock, LogIn } from "lucide-react";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Mail, Lock, LogIn, UserRoundPlus } from "lucide-react";
+import CardHeader from "./CardHeader";
 
 export default function Login(): React.JSX.Element {
 
     const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -13,18 +21,55 @@ export default function Login(): React.JSX.Element {
         }
     }, [navigate])
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+        setError('');
+    }
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch("http://localhost:3000/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message || 'Ocurrió un error al iniciar sesión. Por favor, inténtalo de nuevo.');
+                return;
+            }
+
+            // Guardar el token en el almacenamiento local
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            // Redirigir al usuario a la página principal
+            navigate('/', { replace: true });
+
+        } catch (error) {
+            console.error("Error en el servidor: ", error);
+            setError('Ocurrió un error al iniciar sesión. Por favor, inténtalo de nuevo.');
+        }
+    }
+
   return (
-    <>
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 shadow-lg">
-            <div className="bg-emerald-100 p-3 rounded-lg">
-                <span className="text-4xl" role="img" aria-label="snail">🐌</span>
-            </div>
-            <h1 className="mb-5 text-emerald-600 font-bold text-4xl">SnailBet</h1>
+    <main className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+        <div className="w-full max-w-md rounded-2xl bg-white p-10 shadow-lg flex flex-col items-center">
+            <CardHeader 
+                title="Inicia sesión"
+                subtitle="Ingresa tus credenciales para acceder a tu cuenta"
+                error={error}
+            />
 
-            <h2 className="text-3xl font-semibold">Iniciar sesión</h2>
-            <p className="text-slate-500">Ingresa a tu cuenta para continuar</p>
-
-            <form action="" className="flex flex-col gap-4 mt-6 w-full max-w-sm">
+            <form action="" className="flex flex-col gap-4 mt-6 w-full max-w-sm" onSubmit={handleSubmit}>
                 <div className="flex gap-3 items-center w-full rounded-xl border border-slate-300 bg-white px-4 py-4 transition focus-within:border-emerald-500 focus-within::ring-2 focus-within::ring-emerald-500">
                     <label htmlFor="email">
                         <Mail size={20}/>
@@ -35,6 +80,7 @@ export default function Login(): React.JSX.Element {
                         name="email" 
                         placeholder="Ingresa tu correo electrónico" 
                         className="w-full min-w-0 border-0 bg-transparent text-slate-700 placeholder:text-slate-400 outline-none focus:ring-0"
+                        onChange={handleChange}
                     />
                 </div>
 
@@ -48,6 +94,7 @@ export default function Login(): React.JSX.Element {
                         name="password" 
                         placeholder="Ingresa tu contraseña" 
                         className="w-full min-w-0 border-0 bg-transparent text-slate-700 placeholder:text-slate-400 outline-none focus:ring-0"
+                        onChange={handleChange}
                     />
                 </div>
 
@@ -68,8 +115,13 @@ export default function Login(): React.JSX.Element {
                 <div className="flex-1 h-px bg-gray-200"></div>
             </div>
 
-            <a href=""></a>
+            <Link to="/register" className="text-sm text-emerald-500 hover:text-emerald-700 flex items-center gap-2
+                hover:cursor-pointer">
+                <UserRoundPlus size={20} />
+                Regístrate aquí
+            </Link>
+
         </div>
-    </>
+    </main>
   )
 }

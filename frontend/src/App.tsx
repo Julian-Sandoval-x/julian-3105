@@ -2,8 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 
 import Login from './components/Login'
-import Main from './components/Main'
 import Register from './components/Register'
+import Dashboard from './components/Dashboard'
 
 
 function App(): React.JSX.Element {
@@ -25,7 +25,7 @@ function App(): React.JSX.Element {
           element=
           {
             <ProtectedRoute>
-              <Main />
+              <Dashboard />
             </ProtectedRoute>
           } 
         />

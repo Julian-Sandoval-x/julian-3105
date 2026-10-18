@@ -1,6 +1,17 @@
 import { User, LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/login', { replace: true });
+
+    }
+
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,8 +32,11 @@ export default function Header() {
                             Usuario
                         </button>
                     </div>
-                    <button className=" flex items-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 py-2 px-4
-                    rounded-lg transition-colors border border-transparent hover:border-red-100 hover:cursor-pointer">
+                    <button 
+                        className="flex items-center gap-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 py-2 px-4
+                            rounded-lg transition-colors border border-transparent hover:border-red-100 hover:cursor-pointer"
+                        onClick={handleLogout}
+                    >
                         <LogOut size={16} className="text-red-500" />
                         Cerrar sesion
                     </button>
