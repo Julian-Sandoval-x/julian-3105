@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import Modal from './modal';
+import Modal from './Modal';
 import LoadingPaymentView from './LoadingPaymentView';
 import { X, Wallet, CreditCard, Check, CircleAlert } from 'lucide-react'
+import FormPaymentView from './FormPaymentView';
 
 type PaymentView = 'form' | 'loading' | 'success' | 'error_tx' | 'error_system';
 
@@ -9,26 +10,22 @@ export default function Saldo() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [paymentView, setPaymentView] = useState<PaymentView>('form');
-    const [paymentAmount, setPaymentAmount] = useState(0);
+
+    const amount = parseFloat(localStorage.getItem('saldo') || '0').toFixed(2);
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-
         setTimeout(() => {
             setPaymentView('form');
-            setPaymentAmount(0);
         }, 300);
     }
 
-    const handlePayment = async () => {
-        if (paymentAmount <= 0)
-            return;
-
+    const handlePayment = async (amountToChange: number) => {
         setPaymentView('loading');
 
         try {
             const response = await fetch('http://localhost:3000/api/payment', {
-                body: JSON.stringify({ amount: paymentAmount }),
+                body: JSON.stringify({ amount: amountToChange }),
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -38,7 +35,7 @@ export default function Saldo() {
             await new Promise(resolve => setTimeout(resolve, 2000));
             if (response.ok) {
                 setPaymentView('success');
-                localStorage.setItem('saldo', (parseFloat(localStorage.getItem('saldo') || '0') + paymentAmount).toString());
+                localStorage.setItem('saldo', (parseFloat(localStorage.getItem('saldo') || '0') + amountToChange).toString());
             } else {
                 setPaymentView('error_tx');
             }
@@ -51,71 +48,9 @@ export default function Saldo() {
     const renderPaymentContent = () => {
         switch (paymentView) {
             case 'form':
-                return (
-                    <form action="">
-                        <div className="flex flex-col gap-2 mb-2">
-                            <label htmlFor="name">Nombre</label>
-                            <input 
-                                type="text" 
-                                id="name" 
-                                placeholder="Tu nombre"
-                                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                            />
-                        </div>
-
-                        <div className="flex flex-col gap-2 mb-2">
-                            <label htmlFor="card">Número de tarjeta</label>
-                            <input 
-                                type="number" 
-                                id="card" 
-                                placeholder="Número de tarjeta"
-                                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                            />
-                        </div>
-
-                        <div className="flex gap-2 mb-2">
-                            <div>
-                                <label htmlFor="expiration">Vencimiento</label>
-                                <input 
-                                    type="number" 
-                                    id="expiration" 
-                                    placeholder="Vencimiento (MM/AA)"
-                                    className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="cvv">CVV</label>
-                                <input 
-                                    type="password" 
-                                    id="cvv" 
-                                    placeholder="CVV"
-                                    className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="amount">Monto a cargar</label>
-                            <input
-                                type="number"
-                                id="amount"
-                                placeholder="Monto a cargar"
-                                value={paymentAmount}
-                                min={1}
-                                onChange={(e) => setPaymentAmount(parseFloat(e.target.value))}
-                                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                            />
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={handlePayment}
-                            className="mt-4 bg-emerald-600 text-white py-2 px-4 rounded-lg hover:bg-emerald-700 w-full hover:cursor-pointer font-semibold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                            Cargar Saldo
-                        </button>
-                    </form>
-                )
+                return <FormPaymentView 
+                    onSubmit={handlePayment}
+                />
             case 'loading':
                 return <LoadingPaymentView />
             case 'success':
@@ -172,7 +107,7 @@ export default function Saldo() {
         </div>
 
         <div className="flex items-baseline gap-2 mb-4">
-            <p className="text-4xl font-black">$0.00</p> 
+            <p className="text-4xl font-black">${amount}</p> 
             <span className="text-gray-400 font-semibold text-lg">MXN</span>
         </div>
         

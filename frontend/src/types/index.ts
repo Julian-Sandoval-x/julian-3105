@@ -6,6 +6,21 @@ export type User = {
 
 export type Session = {
     user: Omit<User, 'passwordHash'>;
-    balance: number;
+    saldo: number;
 }
 
+export type Payment = {
+    name: string;
+    card: string;
+    expiration: string;
+    cvv: string;
+    amount: string | number;
+}
+
+export type PaymentFormData = {
+    name: string;
+    card: string;
+    expiration: string;
+    cvv: string;
+    amount: string;
+}

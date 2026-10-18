@@ -101,6 +101,7 @@ export default function Register() {
                 return;
             }
 
+            localStorage.setItem('saldo', '0');
             navigate('/login', { replace: true });
 
         } catch (err) {

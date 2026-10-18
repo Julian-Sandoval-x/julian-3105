@@ -38,6 +38,7 @@ app.post('/api/register', async (req: Request, res: Response) => {
     };
 
     usersDB.push(newUser);
+    
     res.status(201).json({ message: 'Usuario registrado correctamente' });
 
   } catch (error) {
@@ -94,7 +95,7 @@ app.post('/api/payment', (req: Request, res: Response) => {
   // Simular un retraso en la transacción
   setTimeout(() => {
     // Simular una transacción exitosa
-    res.status(400).json({ message: 'Transacción exitosa' });
+    res.status(200).json({ message: 'Transacción exitosa' });
   }, 5000);
 
 
