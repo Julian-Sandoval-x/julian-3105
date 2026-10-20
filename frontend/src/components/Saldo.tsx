@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { PaymentView } from '../types';
-import Modal from './Modal';
+import Modal from './modal';
 import LoadingPaymentView from './LoadingPaymentView';
 import FormPaymentView from './FormPaymentView';
 import { X, Wallet, CreditCard, Check, CircleAlert } from 'lucide-react'
