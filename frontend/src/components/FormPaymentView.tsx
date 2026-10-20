@@ -128,7 +128,6 @@ export default function FormPaymentView({ onSubmit }: FormPaymentViewProps) {
 
     const handleSubmit = () => {
         if(validateForm()) {
-            console.log('card: ', paymentData.card)
             onSubmit(paymentAmount, paymentData.card);
 
             localStorage.setItem('cardPayment', JSON.stringify({cardResponse: paymentData.card.slice(-4)}));

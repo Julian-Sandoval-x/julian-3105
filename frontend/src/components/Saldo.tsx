@@ -7,6 +7,8 @@ import { X, Wallet, CreditCard, Check, CircleAlert } from 'lucide-react'
 
 export default function Saldo() {
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [paymentView, setPaymentView] = useState<PaymentView>({view: 'form', message: '', title: ''});
 
@@ -21,13 +23,12 @@ export default function Saldo() {
 
     const handlePayment = async (amountToChange: number, card: string) => {
         setPaymentView({view: 'loading', message: '', title: ''});
-        console.log('amountToChange: ', amountToChange, 'card: ', card);
 
         try {
             const id = localStorage.getItem('id');
             const user = localStorage.getItem('user');
             const email = user ? JSON.parse(user).email : null;
-            const response = await fetch('http://localhost:3000/api/payment', {
+            const response = await fetch(`${API_URL}/api/payment`, {
                 body: JSON.stringify({ 
                     id,
                     email,
@@ -142,6 +143,7 @@ export default function Saldo() {
             <button className="flex items-center justify-center gap-2 md:mt-30  bg-emerald-600 text-white py-3 px-4 rounded-xl hover:bg-emerald-700
                 w-full hover:cursor-pointer font-semibold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
                 onClick={() => setIsModalOpen(true)}
+                name="open-modal"
             >
                 <CreditCard size={20} />
                 Cargar Saldo con SnailPay

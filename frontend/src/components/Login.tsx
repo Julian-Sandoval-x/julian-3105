@@ -6,6 +6,7 @@ import CardHeader from "./CardHeader";
 export default function Login(): React.JSX.Element {
 
     const navigate = useNavigate();
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const [formData, setFormData] = useState({
         email: '',
@@ -33,7 +34,7 @@ export default function Login(): React.JSX.Element {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:3000/api/login", {
+            const response = await fetch(`${API_URL}/api/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -103,7 +104,9 @@ export default function Login(): React.JSX.Element {
                     type="submit" 
                     className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700
                         transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-white
-                        hover:cursor-pointer">
+                        hover:cursor-pointer"
+                    name="login"
+                >
                         <LogIn size={20} />
                         Iniciar sesión
                     </button>

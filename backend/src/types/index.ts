@@ -1,3 +1,9 @@
+export type User = {
+    name: string;
+    email: string;
+    passwordHash: string;
+}
+
 export type PaymentStatus = {
     status: 'success' | 'transaction_failed' | 'network_error' | 'insufficient_funds';
 }

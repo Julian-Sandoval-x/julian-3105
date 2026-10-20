@@ -1,12 +1,16 @@
 import express from 'express';
-import type { Request, Response } from 'express';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import jtw from 'jsonwebtoken';
-import type { User } from '../../frontend/src/types/index.ts';
-import type { PaymentStatus } from './types/index.js';
+import 'dotenv/config';
+import type { Request, Response } from 'express';
+import type { PaymentStatus, User } from './types/index.js';
 
-const JWT_SECRET = 'clave_secreta_snailbet';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET no está definido en las variables de entorno');
+}
 
 const app = express();
 const port = 3000;
@@ -90,19 +94,63 @@ app.post('/api/payment', (req: Request, res: Response) => {
   const { id, email, amount, card } = req.body;
 
   if (!amount || amount <= 0) {
-    return res.status(400).json({ message: 'Monto inválido' });
+    return res.status(400).json({ 
+        id: Math.floor(Math.random() * 1000000),
+        title: 'Fondos insuficientes',
+        status: 'insufficient_funds',
+        status_detail: 'Monto inválido',
+        transaction_amount: amount,
+        date_created: new Date().toISOString(),
+        authorization_code: 'AUTH123456',
+        reference: 'REF123456',
+        payer_id: id,
+        payer_email: email
+      });
   }
 
   if (!id) {
-    return res.status(400).json({ message: 'ID de usuario inválido' });
+    return res.status(400).json({
+        id: Math.floor(Math.random() * 1000000),
+        title: 'ID de usuario inválido',
+        status: 'invalid_user_id',
+        status_detail: 'Usuario inválido',
+        transaction_amount: amount,
+        date_created: new Date().toISOString(),
+        authorization_code: 'AUTH123456',
+        reference: 'REF123456',
+        payer_id: id,
+        payer_email: email
+      });
   }
 
   if (!email) {
-    return res.status(400).json({ message: 'Email de usuario inválido' });
+    return res.status(400).json({ 
+      id: Math.floor(Math.random() * 1000000),
+      title: 'Email de usuario inválido',
+      status: 'invalid_email',
+      status_detail: 'Email de usuario inválido',
+      transaction_amount: amount,
+      date_created: new Date().toISOString(),
+      authorization_code: 'AUTH123456',
+      reference: 'REF123456',
+      payer_id: id,
+      payer_email: email
+    });
   }
 
   if (!card || card.length < 4) {
-    return res.status(400).json({ message: 'Número de tarjeta inválido' });
+    return res.status(400).json({ 
+      id: Math.floor(Math.random() * 1000000),
+      title: 'Número de tarjeta inválido',
+      status: 'invalid_card',
+      status_detail: 'Número de tarjeta inválido',
+      transaction_amount: amount,
+      date_created: new Date().toISOString(),
+      authorization_code: 'AUTH123456',
+      reference: 'REF123456',
+      payer_id: id,
+      payer_email: email
+    });
   }
 
   const lastNumberCard = card.slice(-4);
@@ -146,7 +194,7 @@ app.post('/api/payment', (req: Request, res: Response) => {
       res.status(200).json({ 
           id: Math.floor(Math.random() * 1000000),
           status: 'success',
-          title: 'Pago exitoso',
+          title: '¡Pago exitoso!',
           status_detail: 'Pago procesado exitosamente',
           transaction_amount: amount,
           date_created: new Date().toISOString(),
@@ -175,7 +223,24 @@ app.post('/api/payment', (req: Request, res: Response) => {
       }, 5000);
   }
 
+  setTimeout(() => {
+    res.status(200).json({ 
+        id: Math.floor(Math.random() * 1000000),
+        status: 'success',
+        title: '¡Pago exitoso!',
+        status_detail: 'Pago procesado exitosamente',
+        transaction_amount: amount,
+        date_created: new Date().toISOString(),
+        authorization_code: 'AUTH123456',
+        reference: 'REF123456',
+        payer_id: id,
+        payer_email: email
+    });
+  }, 5000);
+
 });
+
+
 
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
@@ -183,6 +248,4 @@ app.get('/api/health', (req: Request, res: Response) => {
   })
 });
 
-app.listen(port, () => {
-  console.log(`Servidor mock de SnailPay escuchando en http://localhost:${port}`);
-});
+export default app;

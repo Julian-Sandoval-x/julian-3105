@@ -7,6 +7,8 @@ export default function Register() {
 
     const navigate = useNavigate();
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     const [userData, setUserData] = useState({
         nombre: '',
         email: '',
@@ -87,7 +89,7 @@ export default function Register() {
                 password: userData.password
             }
 
-            const response = await fetch("http://localhost:3000/api/register", {
+            const response = await fetch(`${API_URL}/api/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -212,7 +214,11 @@ export default function Register() {
                   className="w-full min-w-0 border-0 bg-transparent text-slate-700 placeholder:text-slate-400 outline-none focus:ring-0"
                   onChange={handleChange}
               />
-              <button type="button" className="text-slate-400 hover:text-slate-600 hover:cursor-pointer focus:outline-none" onClick={toggleRepeatPasswordVisibility}>
+              <button   
+                type="button" 
+                className="text-slate-400 hover:text-slate-600 hover:cursor-pointer focus:outline-none" 
+                onClick={toggleRepeatPasswordVisibility}
+            >
                 {repeatPasswordVisible ? (
                     <Eye size={20} />
                 ) : (
@@ -226,6 +232,7 @@ export default function Register() {
                 className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700
                     transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-white
                     hover:cursor-pointer"
+                name="register"
                 >
                     <UserRoundPlus size={20} />
                     Regístrate
