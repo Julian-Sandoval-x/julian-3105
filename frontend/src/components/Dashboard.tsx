@@ -1,7 +1,7 @@
 import Header from "./Header"
 import Saldo from "./Saldo"
-import GraficaBarra from "./grafica-barra"
-import GraficaDonut from "./grafica-donut"
+import GraficaBarra from "./BarChart"
+import GraficaDonut from "./DonutChart"
 
 export default function Main() {
 
@@ -12,7 +12,7 @@ export default function Main() {
             <h1 className="text-2xl font-bold">Bienvenido a SnailBet</h1>
             <p className="text-gray-600 text-sm">Resumen de tu cuenta y estadísticas de carreras</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
                 <Saldo />
                 <GraficaDonut />
             </div>

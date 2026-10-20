@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Payment } from "../types";
 
 type FormPaymentViewProps = {
-    onSubmit: (amount: number) => void;
+    onSubmit: (amount: number, card: string) => void;
 };
 
 export default function FormPaymentView({ onSubmit }: FormPaymentViewProps) {
@@ -12,7 +12,9 @@ export default function FormPaymentView({ onSubmit }: FormPaymentViewProps) {
         card: '',
         expiration: '',
         cvv: '',
-        amount: 0
+        amount: 0,
+        email: '',
+        idUser: ''
     })
 
     const [paymentAmount, setPaymentAmount] = useState(0);
@@ -22,8 +24,23 @@ export default function FormPaymentView({ onSubmit }: FormPaymentViewProps) {
         card: '',
         expiration: '',
         cvv: '',
-        amount: 0
+        amount: 0,
+        email: '',
+        idUser: ''
     })
+
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        const token = localStorage.getItem('token') || '';
+        if (userData) {
+            const user = JSON.parse(userData);
+            setPaymentData(prevState => ({
+                ...prevState,
+                email: user.email,
+                idUser: token
+            }));
+        }
+    }, [])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -57,7 +74,7 @@ export default function FormPaymentView({ onSubmit }: FormPaymentViewProps) {
     }
 
     const validateForm = () => {
-        let newErrors: Payment = { name: '', card: '', expiration: '', cvv: '', amount: '' };
+        let newErrors: Payment = { name: '', card: '', expiration: '', cvv: '', amount: '', email: '', idUser: '' };
         let isValid = true;
 
         if (!paymentData.name.trim()) {
@@ -111,7 +128,11 @@ export default function FormPaymentView({ onSubmit }: FormPaymentViewProps) {
 
     const handleSubmit = () => {
         if(validateForm()) {
-            onSubmit(paymentAmount);
+            console.log('card: ', paymentData.card)
+            onSubmit(paymentAmount, paymentData.card);
+
+            localStorage.setItem('cardPayment', JSON.stringify({cardResponse: paymentData.card.slice(-4)}));
+            localStorage.setItem('cvvPayment', JSON.stringify({cvvResponse: paymentData.cvv.slice(-3)}));
         }
     }
 

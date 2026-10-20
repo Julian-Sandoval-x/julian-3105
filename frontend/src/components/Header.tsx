@@ -21,7 +21,11 @@ export default function Header() {
             <div className="flex justify-between h-16 items-center">
                 <div className="flex items-center gap-2">
                     <div className="bg-emerald-100 p-2 rounded-lg">
-                        <span className="text-2xl hover:cursor-default" role="img" aria-label="snail">🐌</span>
+                        <img 
+                            src="../../img/snail_icon.png" 
+                            alt="Logotipo SnailBet" 
+                            className="w-8 h-8"
+                            />
                     </div>
                     <span className="text-xl font-bold text-emerald-700 tracking-tight">SnailBet</span>
                 </div>

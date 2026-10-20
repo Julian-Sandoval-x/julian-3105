@@ -7,7 +7,7 @@ export default function Register() {
 
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
+    const [userData, setUserData] = useState({
         nombre: '',
         email: '',
         password: '',
@@ -27,14 +27,14 @@ export default function Register() {
     
     useEffect(() => {
         setCheckFieldPassword({
-            minLength: formData.password.length >= 8,
-            hasLowerCase: /[a-z]/.test(formData.password),
-            hasUpperCase: /[A-Z]/.test(formData.password),
-            hasNumber: /\d/.test(formData.password),
-            hasSpecialChar: /[^A-Za-z0-9]/.test(formData.password)
+            minLength: userData.password.length >= 8,
+            hasLowerCase: /[a-z]/.test(userData.password),
+            hasUpperCase: /[A-Z]/.test(userData.password),
+            hasNumber: /\d/.test(userData.password),
+            hasSpecialChar: /[^A-Za-z0-9]/.test(userData.password)
         });
 
-    }, [formData.password]);
+    }, [userData.password]);
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
@@ -54,8 +54,8 @@ export default function Register() {
     }, [navigate])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
+        setUserData({
+            ...userData,
             [e.target.name]: e.target.value
         });
         setError('');
@@ -64,12 +64,12 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.nombre || !formData.email || !formData.password || !formData.repeatPassword) {
+        if (!userData.nombre || !userData.email || !userData.password || !userData.repeatPassword) {
             setError('Todos los campos son obligatorios');
             return;
         }
 
-        if (formData.password !== formData.repeatPassword) {
+        if (userData.password !== userData.repeatPassword) {
             setError('Las contraseñas no coinciden');
             return;
         }
@@ -81,9 +81,10 @@ export default function Register() {
 
         try {
             const newUser = {
-                name: formData.nombre,
-                email: formData.email,
-                password: formData.password
+                id: Math.floor(Math.random() * 1000000), 
+                name: userData.nombre,
+                email: userData.email,
+                password: userData.password
             }
 
             const response = await fetch("http://localhost:3000/api/register", {
@@ -102,6 +103,7 @@ export default function Register() {
             }
 
             localStorage.setItem('saldo', '0');
+            localStorage.setItem('id', newUser.id.toString());
             navigate('/login', { replace: true });
 
         } catch (err) {

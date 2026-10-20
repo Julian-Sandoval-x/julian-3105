@@ -4,6 +4,7 @@ import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import jtw from 'jsonwebtoken';
 import type { User } from '../../frontend/src/types/index.ts';
+import type { PaymentStatus } from './types/index.js';
 
 const JWT_SECRET = 'clave_secreta_snailbet';
 
@@ -86,18 +87,93 @@ app.post('/api/login', async (req: Request, res: Response) => {
 });
 
 app.post('/api/payment', (req: Request, res: Response) => {
-  const { amount } = req.body;
+  const { id, email, amount, card } = req.body;
 
   if (!amount || amount <= 0) {
     return res.status(400).json({ message: 'Monto inválido' });
   }
 
-  // Simular un retraso en la transacción
-  setTimeout(() => {
-    // Simular una transacción exitosa
-    res.status(200).json({ message: 'Transacción exitosa' });
-  }, 5000);
+  if (!id) {
+    return res.status(400).json({ message: 'ID de usuario inválido' });
+  }
 
+  if (!email) {
+    return res.status(400).json({ message: 'Email de usuario inválido' });
+  }
+
+  if (!card || card.length < 4) {
+    return res.status(400).json({ message: 'Número de tarjeta inválido' });
+  }
+
+  const lastNumberCard = card.slice(-4);
+
+  if (lastNumberCard === '0000') {
+    setTimeout(() => {
+      res.status(402).json({ 
+        id: Math.floor(Math.random() * 1000000),
+        title: 'Fondos insuficientes',
+        status: 'insufficient_funds',
+        status_detail: 'No tienes suficientes fondos para realizar esta transacción.',
+        transaction_amount: amount,
+        date_created: new Date().toISOString(),
+        authorization_code: 'AUTH123456',
+        reference: 'REF123456',
+        payer_id: id,
+        payer_email: email
+      });
+    }, 5000);
+  }
+
+  if (lastNumberCard === '9999') {
+    setTimeout(() => {
+      res.status(503).json({ 
+        id: Math.floor(Math.random() * 1000000),
+          status: 'network_error',
+          title: 'Error de red',
+          status_detail: 'SnailPay no está disponible temporalmente. Por favor, inténtalo de nuevo más tarde.',
+          transaction_amount: amount,
+          date_created: new Date().toISOString(),
+          authorization_code: 'AUTH123456',
+          reference: 'REF123458',
+          payer_id: id,
+          payer_email: email
+      });
+    }, 5000);
+  }
+
+  if (lastNumberCard === '1234') {
+    setTimeout(() => {
+      res.status(200).json({ 
+          id: Math.floor(Math.random() * 1000000),
+          status: 'success',
+          title: 'Pago exitoso',
+          status_detail: 'Pago procesado exitosamente',
+          transaction_amount: amount,
+          date_created: new Date().toISOString(),
+          authorization_code: 'AUTH123456',
+          reference: 'REF123404',
+          payer_id: id,
+          payer_email: email
+        });
+      }, 5000);
+  }
+
+  if (lastNumberCard === '5678') {
+    setTimeout(() => {
+      res.status(402).json({ 
+          id: Math.floor(Math.random() * 1000000),
+          status: 'transaction_failed',
+          title: 'Error en la transacción',
+          status_detail: 'Ocurrió un error en la transacción. Por favor, inténtalo de nuevo.',
+          transaction_amount: amount,
+          date_created: new Date().toISOString(),
+          authorization_code: 'AUTH123456',
+          reference: 'REF123404',
+          payer_id: id,
+          payer_email: email
+        });
+      }, 5000);
+  }
 
 });
 
