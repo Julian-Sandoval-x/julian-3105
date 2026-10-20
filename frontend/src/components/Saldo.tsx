@@ -44,7 +44,7 @@ export default function Saldo() {
             const data = await response.json();
 
             if(!response.ok) {
-                setPaymentView({view: 'error_system', message: data.status_detail, title: 'Error en la transacción'});
+                setPaymentView({view: 'error_system', message: data.status_detail, title: data.title});
                 console.error('Error en la transacción:', data.status_detail);
                 return;
             }
@@ -68,6 +68,7 @@ export default function Saldo() {
                 setPaymentView({view: 'error_system', message: data.status_detail, title: data.title});
             }
         } catch (error) {
+            
             setPaymentView({view: 'error_system', message: 'Error en la transacción.', title: 'Error en la transacción'});
             console.error('Error en la transacción:', error);
         }

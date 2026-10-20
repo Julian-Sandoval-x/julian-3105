@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, UserRoundPlus, CircleCheck, Eye, EyeClosed } from "lucide-react";
 import CardHeader from "./CardHeader";
+import type { PasswordFields } from "../types";
 
 export default function Register() {
 
@@ -19,10 +20,10 @@ export default function Register() {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [repeatPasswordVisible, setRepeatPasswordVisible] = useState(false);
 
-    const [checkFieldPassword, setCheckFieldPassword] = useState({
+    const [checkFieldPassword, setCheckFieldPassword] = useState<PasswordFields>({
         minLength: false,
-        hasLowerCase: false,
-        hasUpperCase: false,
+        hasLowercase: false,
+        hasUppercase: false,
         hasNumber: false,
         hasSpecialChar: false
     });
@@ -30,8 +31,8 @@ export default function Register() {
     useEffect(() => {
         setCheckFieldPassword({
             minLength: userData.password.length >= 8,
-            hasLowerCase: /[a-z]/.test(userData.password),
-            hasUpperCase: /[A-Z]/.test(userData.password),
+            hasLowercase: /[a-z]/.test(userData.password),
+            hasUppercase: /[A-Z]/.test(userData.password),
             hasNumber: /\d/.test(userData.password),
             hasSpecialChar: /[^A-Za-z0-9]/.test(userData.password)
         });
@@ -76,7 +77,7 @@ export default function Register() {
             return;
         }
 
-        if (!checkFieldPassword.minLength || !checkFieldPassword.hasLowerCase || !checkFieldPassword.hasUpperCase || !checkFieldPassword.hasNumber || !checkFieldPassword.hasSpecialChar) {
+        if (!checkFieldPassword.minLength || !checkFieldPassword.hasLowercase || !checkFieldPassword.hasUppercase || !checkFieldPassword.hasNumber || !checkFieldPassword.hasSpecialChar) {
             setError('La contraseña no cumple con los requisitos');
             return;
         }
@@ -184,11 +185,11 @@ export default function Register() {
                     Al menos 8 caracteres
                 </li>
                 <li className="flex items-center">
-                    <CircleCheck size={16} className={`${checkFieldPassword.hasLowerCase ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
+                    <CircleCheck size={16} className={`${checkFieldPassword.hasLowercase ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
                     Al menos una letra minuscula
                 </li>
                 <li className="flex items-center">
-                    <CircleCheck size={16} className={`${checkFieldPassword.hasUpperCase ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
+                    <CircleCheck size={16} className={`${checkFieldPassword.hasUppercase ? 'text-emerald-500' : 'text-slate-500'} mr-2`} />
                     Al menos una letra mayúscula
                 </li>
                 <li className="flex items-center">

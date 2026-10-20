@@ -10,7 +10,6 @@ export default function Header() {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
         navigate('/login', { replace: true });
 
     }

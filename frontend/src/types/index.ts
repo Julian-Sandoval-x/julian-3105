@@ -9,6 +9,14 @@ export type Session = {
     saldo: number;
 }
 
+export type PasswordFields = {
+    minLength: boolean;
+    hasUppercase: boolean;
+    hasLowercase: boolean;
+    hasNumber: boolean;
+    hasSpecialChar: boolean;
+}
+
 export type Payment = {
     name: string;
     card: string;

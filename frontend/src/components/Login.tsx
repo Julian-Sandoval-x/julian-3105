@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, LogIn, UserRoundPlus } from "lucide-react";
+import { Mail, Lock, LogIn, UserRoundPlus, Eye, EyeClosed } from "lucide-react";
 import CardHeader from "./CardHeader";
 
 export default function Login(): React.JSX.Element {
@@ -8,11 +8,11 @@ export default function Login(): React.JSX.Element {
     const navigate = useNavigate();
     const API_URL = import.meta.env.VITE_API_URL;
 
-    const [formData, setFormData] = useState({
+    const [loginData, setLoginData] = useState({
         email: '',
         password: ''
     });
-
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -23,8 +23,8 @@ export default function Login(): React.JSX.Element {
     }, [navigate])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
+        setLoginData({
+            ...loginData,
             [e.target.name]: e.target.value
         });
         setError('');
@@ -39,7 +39,7 @@ export default function Login(): React.JSX.Element {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(loginData)
             });
 
             const data = await response.json();
@@ -90,13 +90,21 @@ export default function Login(): React.JSX.Element {
                         <Lock size={20}/>
                     </label>
                     <input 
-                        type="password" 
+                        type={passwordVisible ? "text" : "password"} 
                         id="password" 
                         name="password" 
                         placeholder="Ingresa tu contraseña" 
                         className="w-full min-w-0 border-0 bg-transparent text-slate-700 placeholder:text-slate-400 outline-none focus:ring-0"
                         onChange={handleChange}
                     />
+                    <button 
+                        type = "button"
+                        className="text-slate-400 hover:cursor-pointer hover:text-slate-600 focus:outline-none"
+                        onClick={() => setPasswordVisible(!passwordVisible)}
+                    >
+                        {passwordVisible ? <Eye size={20} /> : <EyeClosed size={20} />}
+
+                    </button>
                 </div>
 
                 
