@@ -22,7 +22,7 @@ export default function Header() {
                 <div className="flex items-center gap-2">
                     <div className="bg-emerald-100 p-2 rounded-lg">
                         <img 
-                            src="../../img/snail_icon.png" 
+                            src="/snail_icon.png" 
                             alt="Logotipo SnailBet" 
                             className="w-8 h-8"
                             />
