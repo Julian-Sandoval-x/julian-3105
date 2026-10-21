@@ -130,8 +130,6 @@ npm run dev
 
 Abre la dirección mostrada por Vite (habitualmente `http://localhost:5173`). Para utilizar registro, login y recargas, **la API debe estar disponible** en la URL configurada.
 
-> No subas los archivos `.env` ni claves privadas al repositorio. `VITE_API_URL` es una configuración pública del frontend; `JWT_SECRET` debe permanecer exclusivamente en el backend.
-
 ## API REST
 
 Las rutas actuales están definidas en `backend/src/index.ts`.
@@ -162,8 +160,6 @@ Las rutas actuales están definidas en `backend/src/index.ts`.
 | `0000` | Fondos insuficientes |
 | `9999` | Error de red |
 | `5678` | Transacción fallida |
-
-**Advertencia técnica:** el manejador actual también programa una respuesta genérica de éxito después de evaluar estos escenarios. En los casos especiales puede intentar responder dos veces, por lo que estos flujos requieren una corrección con retornos o una estructura excluyente antes de considerarlos totalmente confiables. Los números de tarjeta solo se usan como entrada del simulador; evita proporcionar datos de tarjetas reales.
 
 ## Pruebas automatizadas
 
