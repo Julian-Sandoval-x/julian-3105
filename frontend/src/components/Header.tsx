@@ -9,6 +9,8 @@ export default function Header() {
     const username = loggedUser ? JSON.parse(loggedUser).name : 'Usuario';
 
     const handleLogout = () => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('id');
         localStorage.removeItem('token');
         navigate('/login', { replace: true });
 

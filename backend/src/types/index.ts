@@ -1,4 +1,5 @@
 export type User = {
+    id: number;
     name: string;
     email: string;
     passwordHash: string;
@@ -10,6 +11,7 @@ export type PaymentStatus = {
 
 export type PaymentResponse = {
     id: number;
+    title: string;
     status: PaymentStatus['status'];
     status_detail: string;
     transaction_amount: number;
@@ -18,4 +20,5 @@ export type PaymentResponse = {
     reference: string;
     payer_id: string;
     payer_email: string;
+    http_status_code: number;
 }

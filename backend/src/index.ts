@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import jtw from 'jsonwebtoken';
 import 'dotenv/config';
 import type { Request, Response } from 'express';
-import type { PaymentStatus, User } from './types/index.js';
+import type { PaymentStatus, User, PaymentResponse } from './types/index.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -22,7 +22,7 @@ const usersDB: User[] = [];
 
 app.post('/api/register', async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
+    const {id, name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Todos los campos son obligatorios' });
@@ -37,6 +37,7 @@ app.post('/api/register', async (req: Request, res: Response) => {
     const passwordHash = await bcrypt.hash(password, salt);
 
     const newUser: User = {
+      id,
       name,
       email,
       passwordHash
@@ -72,6 +73,7 @@ app.post('/api/login', async (req: Request, res: Response) => {
     }
 
     const payload = {
+      id: user.id,
       email: user.email,
       name: user.name
     }
@@ -153,94 +155,99 @@ app.post('/api/payment', (req: Request, res: Response) => {
     });
   }
 
+  const scenarios: Record<string, PaymentResponse> = {
+    '0000': {
+      id: Math.floor(Math.random() * 1000000),
+      title: 'Fondos insuficientes',
+      status: 'insufficient_funds',
+      status_detail: 'No tienes suficientes fondos para realizar esta transacción.',
+      transaction_amount: amount,
+      date_created: new Date().toISOString(),
+      authorization_code: 'AUTH123456',
+      reference: 'REF123456',
+      payer_id: id,
+      payer_email: email,
+      http_status_code: 400
+    },
+    '9999': {
+      id: Math.floor(Math.random() * 1000000),
+      status: 'network_error',
+      title: 'Error de red',
+      status_detail: 'SnailPay no está disponible temporalmente. Por favor, inténtalo de nuevo más tarde.',
+      transaction_amount: amount,
+      date_created: new Date().toISOString(),
+      authorization_code: 'AUTH123456',
+      reference: 'REF123458',
+      payer_id: id,
+      payer_email: email,
+      http_status_code: 503
+    },
+    '1234': { 
+      id: Math.floor(Math.random() * 1000000),
+      status: 'success',
+      title: '¡Pago exitoso!',
+      status_detail: 'Pago procesado exitosamente',
+      transaction_amount: amount,
+      date_created: new Date().toISOString(),
+      authorization_code: 'AUTH123456',
+      reference: 'REF123404',
+      payer_id: id,
+      payer_email: email,
+      http_status_code: 200
+    },
+    '5678': {
+      id: Math.floor(Math.random() * 1000000),
+      status: 'transaction_failed',
+      title: 'Error en la transacción',
+      status_detail: 'Ocurrió un error en la transacción. Por favor, inténtalo de nuevo.',
+      transaction_amount: amount,
+      date_created: new Date().toISOString(),
+      authorization_code: 'AUTH123456',
+      reference: 'REF123404',
+      payer_id: id,
+      payer_email: email,
+      http_status_code: 400
+    }
+  }
   const lastNumberCard = card.slice(-4);
+  const scenario = scenarios[lastNumberCard];
 
-  if (lastNumberCard === '0000') {
-    setTimeout(() => {
-      res.status(402).json({ 
-        id: Math.floor(Math.random() * 1000000),
-        title: 'Fondos insuficientes',
-        status: 'insufficient_funds',
-        status_detail: 'No tienes suficientes fondos para realizar esta transacción.',
-        transaction_amount: amount,
-        date_created: new Date().toISOString(),
-        authorization_code: 'AUTH123456',
-        reference: 'REF123456',
-        payer_id: id,
-        payer_email: email
-      });
-    }, 5000);
-  }
-
-  if (lastNumberCard === '9999') {
-    setTimeout(() => {
-      res.status(503).json({ 
-        id: Math.floor(Math.random() * 1000000),
-          status: 'network_error',
-          title: 'Error de red',
-          status_detail: 'SnailPay no está disponible temporalmente. Por favor, inténtalo de nuevo más tarde.',
-          transaction_amount: amount,
-          date_created: new Date().toISOString(),
-          authorization_code: 'AUTH123456',
-          reference: 'REF123458',
-          payer_id: id,
-          payer_email: email
-      });
-    }, 5000);
-  }
-
-  if (lastNumberCard === '1234') {
-    setTimeout(() => {
-      res.status(200).json({ 
-          id: Math.floor(Math.random() * 1000000),
-          status: 'success',
-          title: '¡Pago exitoso!',
-          status_detail: 'Pago procesado exitosamente',
-          transaction_amount: amount,
-          date_created: new Date().toISOString(),
-          authorization_code: 'AUTH123456',
-          reference: 'REF123404',
-          payer_id: id,
-          payer_email: email
-        });
-      }, 5000);
-  }
-
-  if (lastNumberCard === '5678') {
-    setTimeout(() => {
-      res.status(402).json({ 
-          id: Math.floor(Math.random() * 1000000),
-          status: 'transaction_failed',
-          title: 'Error en la transacción',
-          status_detail: 'Ocurrió un error en la transacción. Por favor, inténtalo de nuevo.',
-          transaction_amount: amount,
-          date_created: new Date().toISOString(),
-          authorization_code: 'AUTH123456',
-          reference: 'REF123404',
-          payer_id: id,
-          payer_email: email
-        });
-      }, 5000);
+  if (!scenario) {
+   return res.status(400).json({
+      id: Math.floor(Math.random() * 1000000),
+      title: 'Tarjeta inválida',
+      status: 'error_tx',
+      status_detail: 'La tarjeta ingresada no es válida.',
+      transaction_amount: amount,
+      date_created: new Date().toISOString(),
+      authorization_code: 'AUTH123456',
+      reference: 'REF123456',
+      payer_id: id,
+      payer_email: email,
+      http_status_code: 400
+   }) 
   }
 
   setTimeout(() => {
-    res.status(200).json({ 
+    res.status(scenario.http_status_code).json({ 
         id: Math.floor(Math.random() * 1000000),
-        status: 'success',
-        title: '¡Pago exitoso!',
-        status_detail: 'Pago procesado exitosamente',
-        transaction_amount: amount,
-        date_created: new Date().toISOString(),
-        authorization_code: 'AUTH123456',
-        reference: 'REF123456',
-        payer_id: id,
-        payer_email: email
+        status: scenario.status,
+        title: scenario.title,
+        status_detail: scenario.status_detail,
+        transaction_amount: scenario.transaction_amount,
+        date_created: scenario.date_created,
+        authorization_code: scenario.authorization_code,
+        reference: scenario.reference,
+        payer_id: scenario.payer_id,
+        payer_email: scenario.payer_email
     });
   }, 5000);
 
 });
 
-
+app.listen(3000, () => {
+  console.log(`Servidor mock de SnailPay escuchando en http://localhost:${port}`);
+});
 
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
